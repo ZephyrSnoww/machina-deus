@@ -3,7 +3,7 @@ const { createDefaultEmbed } = require("../helpers/defaults");
 module.exports = {
     data: {
         name: "create",
-        arguments: "<subcommand> <name> [<extras>]",
+        arguments: "<subcommand> <name> [extras]",
         description: "Create something.",
         subcommands: [
             {
@@ -21,12 +21,12 @@ module.exports = {
             },
             {
                 name: "emoji",
-                arguments: "<name> [<image url>]",
+                arguments: "<name> [image url]",
                 description: "Create an emoji. Must attach an image or provide a URL."
             },
             {
                 name: "role",
-                arguments: "<name> [<color>]",
+                arguments: "<name> [color]",
                 description: "Create a role."
             },
             {
