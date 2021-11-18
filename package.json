@@ -1,0 +1,14 @@
+{
+  "name": "machina-deus",
+  "version": "1.0.0",
+  "description": "",
+  "main": "bot/index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Sophie",
+  "license": "ISC",
+  "dependencies": {
+    "discord.js": "^13.3.1"
+  }
+}
