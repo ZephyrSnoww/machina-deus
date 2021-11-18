@@ -9,10 +9,7 @@ module.exports = {
             {
                 name: "channel",
                 arguments: "<name>",
-                description: "Create a channel.",
-                async execute(message, name) {
-
-                }
+                description: "Create a channel."
             },
             {
                 name: "voice-channel",
