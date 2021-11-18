@@ -1,5 +1,9 @@
 # Machina Deus
 
+ ---
+ 
+ ## Features
+ 
 - [x] Command handler
 - [ ] Commands
 	- [x] help
