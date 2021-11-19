@@ -45,13 +45,13 @@ client.on("messageCreate", async (message) => {
     const command = client.commands.get(commandString);
 
     // If they're reloading the bot
-    if (commandString == "reload") {
+    if (commandString === "reload") {
         // Reload config
         config = require("../config.json");
         client.config = config;
 
         // Reload commands
-        commandFiles = fs.readdirSync("./bot/commands").filter(file => file.endsWith(".js"));
+        commandFiles = fs.readdirSync("./bot/commands").filter((file) => file.endsWith(".js"));
         client.commands = new Collection();
 
         for (const file of commandFiles) {
