@@ -9,4 +9,4 @@ module.exports = {
         await message.reply("Pong.");
         console.info(`${message.author.username} pinged Machina Deus.`);
     }
-}
+};

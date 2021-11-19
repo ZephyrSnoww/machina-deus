@@ -1,4 +1,4 @@
-const { createDefaultEmbed } = require("../helpers/defaults")
+const { createDefaultEmbed } = require("../helpers/defaults");
 
 module.exports = {
     data: {
@@ -20,4 +20,4 @@ module.exports = {
 
         console.info(`${message.author.username} started a simple vote.`);
     }
-}
+};

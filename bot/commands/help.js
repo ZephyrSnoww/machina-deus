@@ -13,8 +13,8 @@ module.exports = {
 
         let output = [];
 
-        commands.forEach((command, command_name) => {
-            output.push(`**${prefix}${command_name}** ${command.data.arguments} - ${command.data.description}`);
+        commands.forEach((command, commandName) => {
+            output.push(`**${prefix}${commandName}** ${command.data.arguments} - ${command.data.description}`);
         });
 
         const embed = createDefaultEmbed("Machine Deus Commands", output.join("\n"));
@@ -22,4 +22,4 @@ module.exports = {
         console.info(`${message.author.username} listed commands.`);
         message.reply({ embeds: [embed] });
     }
-}
+};
