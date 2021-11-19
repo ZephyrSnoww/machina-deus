@@ -43,8 +43,23 @@ module.exports = {
         const subcommand = input[1];
 
         if (subcommand == "create") {
+            const ids = {
+                name: null,
+                race: null,
+                dob: null,
+                height: null,
+                weight: null,
+            };
+
             let embed = createDefaultEmbed(`Createing an ID for ${message.author.username}`, `Enter desired name.`);
             let reply = await message.reply({ embeds: [embed] });
+            const filter = (m) => m.author.id === message.author.id;
+            const collector = reply.channel.createMessageCollector(filter, {
+                time: 60000,
+            });
+            collector.on('collect', async (msg) => {
+                
+            })
         }
     }
 }
