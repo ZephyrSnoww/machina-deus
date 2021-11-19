@@ -13,7 +13,7 @@ const client = new Client({ intents: Object.values(Intents.FLAGS) });
 // Get all command files
 // Make a new commands collection
 // ==================================================
-let commandFiles = fs.readdirSync("./bot/commands").filter(file => file.endsWith(".js"));
+let commandFiles = fs.readdirSync("./bot/commands").filter((file) => file.endsWith(".js"));
 client.commands = new Collection();
 client.config = config;
 
@@ -38,7 +38,7 @@ client.once("ready", () => {
 // ==================================================
 client.on("messageCreate", async (message) => {
     // If the message doesn't start with the bots prefix, do nothing
-    if (!message.content.startsWith(config.prefix)) return;
+    if (!message.content.startsWith(config.prefix)) { return; }
 
     const input = message.content.substring(config.prefix.length);
     const commandString = input.split(" ")[0];
@@ -66,7 +66,7 @@ client.on("messageCreate", async (message) => {
     }
 
     // If the command doesn't exist, do nothing
-    if (!command) return;
+    if (!command) { return; }
 
     try {
         // Try to execute the command

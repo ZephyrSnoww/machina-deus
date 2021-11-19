@@ -57,7 +57,7 @@ module.exports = {
             const collector = reply.channel.createMessageCollector(filter, {
                 time: 60000,
             });
-            collector.on('collect', async (msg) => {
+            collector.on("collect", async (msg) => {
                 
             });
         }
