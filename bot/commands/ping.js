@@ -1,8 +1,8 @@
 module.exports = {
     data: {
         name: "ping",
-        arguments: "",
-        description: "Ping Machina Deus."
+        description: "Ping Machina Deus.",
+        arguments: []
     },
 
     async execute(client, message) {

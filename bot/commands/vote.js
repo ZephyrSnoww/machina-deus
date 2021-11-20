@@ -3,8 +3,13 @@ const { createDefaultEmbed } = require("../helpers/defaults");
 module.exports = {
     data: {
         name: "vote",
-        arguments: "<description>",
-        description: "Create a simple vote."
+        description: "Create a simple vote.",
+        arguments: [
+            {
+                name: "description",
+                required: true
+            }
+        ]
     },
 
     async execute(client, message) {

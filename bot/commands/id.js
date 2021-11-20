@@ -3,8 +3,13 @@ const { createDefaultEmbed } = require("../helpers/defaults");
 module.exports = {
     data: {
         name: "id",
-        arguments: "",
         description: "Your server ID.",
+        arguments: [
+            {
+                name: "subcommand",
+                required: true
+            }
+        ],
         subcommands: [
             {
                 name: "create",

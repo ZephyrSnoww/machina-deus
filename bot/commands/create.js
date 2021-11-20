@@ -3,33 +3,80 @@ const { createDefaultEmbed } = require("../helpers/defaults");
 module.exports = {
     data: {
         name: "create",
-        arguments: "<subcommand> <name> [extras]",
         description: "Create something.",
+        arguments: [
+            {
+                name: "subcommand",
+                required: true
+            },
+            {
+                name: "name",
+                required: true
+            },
+            {
+                name: "extras",
+                required: false
+            }
+        ],
         subcommands: [
             {
                 name: "channel",
-                arguments: "<name>",
-                description: "Create a channel."
+                description: "Create a channel.",
+                arguments: [
+                    {
+                        name: "name",
+                        required: true
+                    }
+                ]
             },
             {
                 name: "voice-channel",
-                arguments: "<name>",
-                description: "Create a voice channel."
+                description: "Create a voice channel.",
+                arguments: [
+                    {
+                        name: "name",
+                        required: true
+                    }
+                ]
             },
             {
                 name: "emoji",
-                arguments: "<name> [image url]",
-                description: "Create an emoji. Must attach an image or provide a URL."
+                description: "Create an emoji. Must attach an image or provide a URL.",
+                arguments: [
+                    {
+                        name: "name",
+                        required: true
+                    },
+                    {
+                        name: "image url",
+                        required: false
+                    }
+                ]
             },
             {
                 name: "role",
                 arguments: "<name> [color]",
-                description: "Create a role."
+                description: "Create a role.",
+                arguments: [
+                    {
+                        name: "name",
+                        required: true
+                    },
+                    {
+                        name: "color",
+                        required: false
+                    }
+                ]
             },
             {
                 name: "category",
-                arguments: "<name>",
-                description: "Create a category."
+                description: "Create a category.",
+                arguments: [
+                    {
+                        name: "name",
+                        required: true
+                    }
+                ]
             }
         ]
     },

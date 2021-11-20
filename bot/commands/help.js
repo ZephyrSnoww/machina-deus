@@ -3,8 +3,8 @@ const { createDefaultEmbed } = require("../helpers/defaults");
 module.exports = {
     data: {
         name: "help",
-        arguments: "",
-        description: "List all Machina Deus commands."
+        description: "List all Machina Deus commands.",
+        arguments: []
     },
 
     async execute(client, message) {
@@ -14,7 +14,17 @@ module.exports = {
         let output = [];
 
         commands.forEach((command, commandName) => {
-            output.push(`**${prefix}${commandName}** ${command.data.arguments} - ${command.data.description}`);
+            let arguments = [];
+            command.arguments.forEach((argument) => {
+                if (argument.required) {
+                    arguments.push(`<${argument.name}>`);
+                }
+                else {
+                    arguments.push(`[${argument.name}]`);
+                }
+            });
+
+            output.push(`**${prefix}${commandName}** ${arguments.join(" ")} - ${command.data.description}`);
         });
 
         const embed = createDefaultEmbed("Machine Deus Commands", output.join("\n"));
