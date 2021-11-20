@@ -3,6 +3,7 @@ const { Client, Intents, Collection } = require("discord.js");
 const fs = require("fs");
 
 let config = require("../config.json");
+const defaults = require("./helpers/defaults");
 
 // ==================================================
 // Create new discord client
@@ -74,7 +75,8 @@ client.on("messageCreate", async (message) => {
     } catch (error) {
         // Error if the command errors
         console.error(error);
-        return message.reply("There was an error while executing this command.");
+        const embed = defaults.createErrorEmbed("500", "There was an error executing this command.")
+        return message.reply({ embeds: [embed] });
     }
 });
 

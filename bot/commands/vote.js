@@ -1,4 +1,4 @@
-const { createDefaultEmbed } = require("../helpers/defaults");
+const defaults = require("../helpers/defaults");
 
 module.exports = {
     data: {
@@ -13,7 +13,7 @@ module.exports = {
     },
 
     async execute(client, message) {
-        const embed = createDefaultEmbed(
+        const embed = defaults.createDefaultEmbed(
             `${message.author.username} Started a Vote`,
             message.content.substring(client.config.prefix.length + this.data.name.length)
         );

@@ -1,4 +1,4 @@
-const { createDefaultEmbed } = require("../helpers/defaults");
+const defaults = require("../helpers/defaults");
 
 module.exports = {
     data: {
@@ -15,7 +15,7 @@ module.exports = {
 
         commands.forEach((command, commandName) => {
             let arguments = [];
-            command.arguments.forEach((argument) => {
+            command.data.arguments.forEach((argument) => {
                 if (argument.required) {
                     arguments.push(`<${argument.name}>`);
                 }
@@ -27,7 +27,7 @@ module.exports = {
             output.push(`**${prefix}${commandName}** ${arguments.join(" ")} - ${command.data.description}`);
         });
 
-        const embed = createDefaultEmbed("Machine Deus Commands", output.join("\n"));
+        const embed = defaults.createDefaultEmbed("Machine Deus Commands", output.join("\n"));
 
         console.info(`${message.author.username} listed commands.`);
         message.reply({ embeds: [embed] });

@@ -1,4 +1,4 @@
-const { createDefaultEmbed } = require("../helpers/defaults");
+const defaults = require("../helpers/defaults");
 
 module.exports = {
     data: {
@@ -39,7 +39,7 @@ module.exports = {
                 validSubcommands.push(`**${client.config.prefix}${this.data.name} ${subcommand.name}** ${subcommand.arguments} - ${subcommand.description}`);
             });
 
-            const embed = createDefaultEmbed("400 Bad Request", "You must include a subcommand.");
+            const embed = defaults.createDefaultEmbed("400 Bad Request", "You must include a subcommand.");
             embed.addField("Valid Subcommands", validSubcommands.join("\n"));
 
             return message.reply({ embeds: [embed] });
@@ -56,7 +56,7 @@ module.exports = {
                 weight: null,
             };
 
-            let embed = createDefaultEmbed(`Createing an ID for ${message.author.username}`, "Enter desired name.");
+            let embed = defaults.createDefaultEmbed(`Createing an ID for ${message.author.username}`, "Enter desired name.");
             let reply = await message.reply({ embeds: [embed] });
             const filter = (m) => m.author.id === message.author.id;
             const collector = reply.channel.createMessageCollector(filter, {
