@@ -55,7 +55,6 @@ module.exports = {
             },
             {
                 name: "role",
-                arguments: "<name> [color]",
                 description: "Create a role.",
                 arguments: [
                     {
