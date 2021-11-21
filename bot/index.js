@@ -75,7 +75,7 @@ client.on("messageCreate", async (message) => {
     } catch (error) {
         // Error if the command errors
         console.error(error);
-        const embed = defaults.createErrorEmbed("500", "There was an error executing this command.")
+        const embed = defaults.createErrorEmbed("500", "There was an error executing this command.");
         return message.reply({ embeds: [embed] });
     }
 });
