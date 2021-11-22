@@ -38,5 +38,9 @@ module.exports = {
         }
 
         return true;
+    },
+
+    async validateArguments(client, message, data) {
+        const input = message.content.split(" ");
     }
 };
