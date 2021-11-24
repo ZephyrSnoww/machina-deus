@@ -1,0 +1,21 @@
+const defaults = require("../helpers/defaults");
+const helpers = require("../helpers/helpers");
+
+module.exports = {
+    data: {
+        name: "command",
+        description: "Do something.",
+        arguments: []
+    },
+
+    async execute(client, message) {
+        const validCommand = await helpers.validateCommand(client, message, this.data);
+        if (!validCommand) { return; }
+        
+        const input = message.content.split(" ");
+
+        const embed = defaults.createDefaultEmbed(`${message.author.username} did something`, `This is a placeholder command.`);
+        message.reply({ embeds: [embed] });
+        console.info(`${message.author.username} did something.`);
+    }
+};
