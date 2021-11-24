@@ -1,4 +1,5 @@
 const defaults = require("../helpers/defaults");
+const helpers = require("../helpers/helpers");
 
 module.exports = {
     data: {
@@ -7,12 +8,16 @@ module.exports = {
         arguments: [
             {
                 name: "description",
-                required: true
+                required: true,
+                type: "string"
             }
         ]
     },
 
     async execute(client, message) {
+        const validCommand = await helpers.validateCommand(client, message, this.data);
+        if (!validCommand) { return; }
+
         const embed = defaults.createDefaultEmbed(
             `${message.author.username} Started a Vote`,
             message.content.substring(client.config.prefix.length + this.data.name.length)
