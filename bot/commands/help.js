@@ -16,7 +16,7 @@ module.exports = {
         commands.forEach((command, commandName) => {
             let arguments = [];
             command.data.arguments.forEach((argument) => {
-                if (argument.required) {
+                if (argument.required || argument.name === "subcommand") {
                     arguments.push(`<${argument.name}>`);
                 }
                 else {
