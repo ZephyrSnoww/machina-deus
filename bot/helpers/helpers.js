@@ -2,7 +2,7 @@ const defaults = require("./defaults");
 
 module.exports = {
     async validateSubcommands(client, message, data) {
-        const input = message.content.split(" ");
+        const input = message.content.toLowerCase().split(" ");
         let validSubcommands = [];
         let validSubcommandNames = [];
 
@@ -41,7 +41,7 @@ module.exports = {
     },
 
     async validateCommand(client, message, data, subcommand=false) {
-        const input = message.content.split(" ");
+        const input = message.content.toLowerCase().split(" ");
         
         // Variables for argument validation
         let validArgumentStrings = [];
