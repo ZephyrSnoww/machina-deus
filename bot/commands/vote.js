@@ -7,7 +7,8 @@ module.exports = {
         arguments: [
             {
                 name: "description",
-                required: true
+                required: true,
+                type: "string"
             }
         ]
     },

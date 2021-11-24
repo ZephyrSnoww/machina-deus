@@ -8,15 +8,9 @@ module.exports = {
         arguments: [
             {
                 name: "subcommand",
-                required: true
-            },
-            {
-                name: "name",
-                required: true
-            },
-            {
-                name: "extras",
-                required: false
+                required: true,
+                type: "subcommand",
+                subcommands: this.data.subcommands
             }
         ],
         subcommands: [
@@ -26,7 +20,8 @@ module.exports = {
                 arguments: [
                     {
                         name: "name",
-                        required: true
+                        required: true,
+                        type: "string"
                     }
                 ]
             },
@@ -36,7 +31,8 @@ module.exports = {
                 arguments: [
                     {
                         name: "name",
-                        required: true
+                        required: true,
+                        type: "string"
                     }
                 ]
             },
@@ -46,11 +42,13 @@ module.exports = {
                 arguments: [
                     {
                         name: "name",
-                        required: true
+                        required: true,
+                        type: "string"
                     },
                     {
                         name: "image url",
-                        required: false
+                        required: false,
+                        type: "url"
                     }
                 ]
             },
@@ -60,11 +58,13 @@ module.exports = {
                 arguments: [
                     {
                         name: "name",
-                        required: true
+                        required: true,
+                        type: "string"
                     },
                     {
                         name: "color",
-                        required: false
+                        required: false,
+                        type: "hex"
                     }
                 ]
             },
@@ -74,7 +74,8 @@ module.exports = {
                 arguments: [
                     {
                         name: "name",
-                        required: true
+                        required: true,
+                        type: "string"
                     }
                 ]
             }

@@ -7,7 +7,9 @@ module.exports = {
         arguments: [
             {
                 name: "subcommand",
-                required: true
+                required: true,
+                type: "subcommand",
+                subcommands: this.data.subcommands
             }
         ],
         subcommands: [
