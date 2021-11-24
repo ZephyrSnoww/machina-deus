@@ -40,14 +40,13 @@ module.exports = {
         return true;
     },
 
-    async validateCommand(client, message, data) {
+    async validateCommand(client, message, data, subcommand=false) {
         const input = message.content.split(" ");
 
         // !create channel blargh
         // 1       2       3
         // 0       1       2
         
-        let subcommand = false;
         let validArgumentStrings = [];
         let validArgumentNames = [];
         let validArgumentText = [];
@@ -61,34 +60,50 @@ module.exports = {
         data.arguments.forEach((argmuent, index) => {
             // If the argument is a subcommand
             if (argument.name === "subcommand") {
-                subcommand = true;
-
                 let validSubcommandStrings = [];
                 let validSubcommandNames = [];
 
                 // Iterate through all valid subcommands
                 argument.subcommands.forEach((subcommand) => {
-                    // Iterate through all of the subcommands arguments
-                    subcommand.arguments.forEach((subcommandArgument) => {
-                        // Add the argument to the help array
-                        if (subcommandArgument.required) {
-                            validArgumentStrings.push(`<${subcommandArgument.name}>`);
-                        }
-                        else {
-                            validArgumentStrings.push(`[${subcommandArgument.name}]`);
-                        }
+                    // // Iterate through all of the subcommands arguments
+                    // subcommand.arguments.forEach((subcommandArgument) => {
+                    //     // Add the argument to the help array
+                    //     if (subcommandArgument.required) {
+                    //         validArgumentStrings.push(`<${subcommandArgument.name}>`);
+                    //     }
+                    //     else {
+                    //         validArgumentStrings.push(`[${subcommandArgument.name}]`);
+                    //     }
 
-                        // Add the argument to the name array
-                        validArgumentNames.push(subcommandArgument.name);
-                        validArgumentText.push(`${subcommandArgument.name} (${subcommandArgument.required ? "required" : "not required"})`);
-                    });
+                    //     // Add the argument to the name array
+                    //     validArgumentNames.push(subcommandArgument.name);
+                    //     validArgumentText.push(`${subcommandArgument.name} (${subcommandArgument.required ? "required" : "not required"})`);
+                    // });
                     
                     // Add the subcommand help string and name
                     validSubcommandStrings.push(`**${client.config.prefix}${data.name} ${subcommand.name}**`);
                     validSubcommandNames.push(subcommand.name);
                 });
 
-                break;
+                if (input.length === 1) {
+                    valid = false;
+                    errorMessage = "You must include a subcommand.";
+                    validOptionsType = "subcommand";
+                    validOptions = validSubcommandStrings;
+                    break;
+                }
+
+                if (!validSubcommandNames.includes(input[1])) {
+                    valid = false;
+                    errorMessage = "You must include a valid subcommand.";
+                    validOptionsType = "subcommand";
+                    validOptions = validSubcommandStrings;
+                    break;
+                }
+
+                let subcommandObject = argument.subcommands.filter(subcommand => subcommand.name === input[1])[0];
+
+                return this.validateCommand(client, message, subcommandObject, true);
             }
 
             // If the argument is... an argument
@@ -115,14 +130,14 @@ module.exports = {
                 continue;
             }
             else if (argument.type === "int") {
-                if (Number(input[index + 1]) === NaN) {
+                if (Number(input[index + (subcommand ? 2 : 1)]) === NaN) {
                     valid = false;
                     errorMessage = `The \`${argument.name}\` argument must be an integer.`;
                     break;
                 }
             }
             else if (argument.type === "url") {
-                if (!input[index + 1].startsWith("http")) {
+                if (!input[index + (subcommand ? 2 : 1)].startsWith("http")) {
                     valid = false;
                     errorMessage = `The \`${argument.name}\` argument must be a URL.`;
                     break;
@@ -130,11 +145,11 @@ module.exports = {
             }
             else if (argument.type === "hex") {
                 let color;
-                if (input[index + 1].startsWith("#")) {
-                    color = input[index + 1].substring(1);
+                if (input[index + (subcommand ? 2 : 1)].startsWith("#")) {
+                    color = input[index + (subcommand ? 2 : 1)].substring(1);
                 }
                 else {
-                    color = input[index + 1];
+                    color = input[index + (subcommand ? 2 : 1)];
                 }
 
                 if (!(color.length === 6 && !isNaN(Number("0x" + color)))) {
@@ -145,30 +160,30 @@ module.exports = {
             }
         });
 
-        // --- Subcommand Validation --- //
-        // If the command requires a subcommand and the user didnt give one
-        if (input.length === 1 && subcommand) {
-            valid = false;
-            errorMessage = "You must include a subcommand.";
-            validOptionsType = "subcommand";
-            validOptions = validSubcommandStrings;
-        }
+        // // --- Subcommand Validation --- //
+        // // If the command requires a subcommand and the user didnt give one
+        // if (input.length === 1 && subcommand) {
+        //     valid = false;
+        //     errorMessage = "You must include a subcommand.";
+        //     validOptionsType = "subcommand";
+        //     validOptions = validSubcommandStrings;
+        // }
 
-        // If the user gave an invalid subcommand
-        if ((!validSubcommandNames.includes(input[1])) && subcommand) {
-            valid = false;
-            errorMessage = "You must include a valid subcommand.";
-            validOptionsType = "subcommand";
-            validOptions = validSubcommandStrings;
-        }
+        // // If the user gave an invalid subcommand
+        // if ((!validSubcommandNames.includes(input[1])) && subcommand) {
+        //     valid = false;
+        //     errorMessage = "You must include a valid subcommand.";
+        //     validOptionsType = "subcommand";
+        //     validOptions = validSubcommandStrings;
+        // }
 
-        // If the user gave a valid subcommand but no arguments
-        if (input.length === 2 && subcommand) {
-            valid = false;
-            errorMessage = "You must include arguments for the subcommand.";
-            validOptions = "arguments";
-            validOptions = validArgumentText;
-        }
+        // // If the user gave a valid subcommand but no arguments
+        // if (input.length === 2 && subcommand) {
+        //     valid = false;
+        //     errorMessage = "You must include arguments for the subcommand.";
+        //     validOptions = "arguments";
+        //     validOptions = validArgumentText;
+        // }
 
         // --- Argument Validation --- //
         // If the command requires arguments but the user gave none
