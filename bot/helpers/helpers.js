@@ -47,18 +47,20 @@ module.exports = {
         // 1       2       3
         // 0       1       2
         
-        let requiredArguments = data.arguments.filter(argument => argument.required);
         let subcommand = false;
+        let validArgumentStrings = [];
+        let validArgumentNames = [];
+        let validArgumentText = [];
 
         let valid = true;
         let errorMessage = "";
         let validOptionsType = "";
-        let validOptions = [];
+        let validOptions = null;
 
         // For each argument in the command
-        data.arguments.forEach((argmuent) => {
+        data.arguments.forEach((argmuent, index) => {
             // If the argument is a subcommand
-            if (argument.type === "subcommand") {
+            if (argument.name === "subcommand") {
                 subcommand = true;
 
                 let validSubcommandStrings = [];
@@ -66,9 +68,6 @@ module.exports = {
 
                 // Iterate through all valid subcommands
                 argument.subcommands.forEach((subcommand) => {
-                    let validArgumentStrings = [];
-                    let validArgumentNames = [];
-
                     // Iterate through all of the subcommands arguments
                     subcommand.arguments.forEach((subcommandArgument) => {
                         // Add the argument to the help array
@@ -81,6 +80,7 @@ module.exports = {
 
                         // Add the argument to the name array
                         validArgumentNames.push(subcommandArgument.name);
+                        validArgumentText.push(`${subcommandArgument.name} (${subcommandArgument.required ? "required" : "not required"})`);
                     });
                     
                     // Add the subcommand help string and name
@@ -89,6 +89,59 @@ module.exports = {
                 });
 
                 break;
+            }
+
+            // If the argument is... an argument
+            if (argument.required) {
+                validArgumentStrings.push(`<${argument.name}>`);
+            }
+            else {
+                validArgumentStrings.push(`[${argument.name}]`);
+            }
+
+            validArgumentNames.push(argument.name);
+
+            // Validate the argument
+            if (argument.required) {
+                if (index >= input.length) {
+                    valid = false;
+                    errorMessage = `You must include the \`${argument.name}\` argument.`;
+                    break;
+                }
+            }
+
+            // Validate argument types
+            if (argument.type === "string") {
+                continue;
+            }
+            else if (argument.type === "int") {
+                if (Number(input[index + 1]) === NaN) {
+                    valid = false;
+                    errorMessage = `The \`${argument.name}\` argument must be an integer.`;
+                    break;
+                }
+            }
+            else if (argument.type === "url") {
+                if (!input[index + 1].startsWith("http")) {
+                    valid = false;
+                    errorMessage = `The \`${argument.name}\` argument must be a URL.`;
+                    break;
+                }
+            }
+            else if (argument.type === "hex") {
+                let color;
+                if (input[index + 1].startsWith("#")) {
+                    color = input[index + 1].substring(1);
+                }
+                else {
+                    color = input[index + 1];
+                }
+
+                if (!(color.length === 6 && !isNaN(Number("0x" + color)))) {
+                    valid = false;
+                    errorMessage = `The \`${argument.name}\` argument must be a hex color code.`;
+                    break;
+                }
             }
         });
 
@@ -102,11 +155,19 @@ module.exports = {
         }
 
         // If the user gave an invalid subcommand
+        if ((!validSubcommandNames.includes(input[1])) && subcommand) {
+            valid = false;
+            errorMessage = "You must include a valid subcommand.";
+            validOptionsType = "subcommand";
+            validOptions = validSubcommandStrings;
+        }
 
         // If the user gave a valid subcommand but no arguments
         if (input.length === 2 && subcommand) {
             valid = false;
-            errorMessage = "You "
+            errorMessage = "You must include arguments for the subcommand.";
+            validOptions = "arguments";
+            validOptions = validArgumentText;
         }
 
         // --- Argument Validation --- //
