@@ -42,15 +42,13 @@ module.exports = {
 
     async validateCommand(client, message, data, subcommand=false) {
         const input = message.content.split(" ");
-
-        // !create channel blargh
-        // 1       2       3
-        // 0       1       2
         
+        // Variables for argument validation
         let validArgumentStrings = [];
         let validArgumentNames = [];
         let validArgumentText = [];
 
+        // Variables for error throwing
         let valid = true;
         let errorMessage = "";
         let validOptionsType = "";
@@ -85,6 +83,7 @@ module.exports = {
                     validSubcommandNames.push(subcommand.name);
                 });
 
+                // If they didnt give any subcommand, error
                 if (input.length === 1) {
                     valid = false;
                     errorMessage = "You must include a subcommand.";
@@ -93,6 +92,7 @@ module.exports = {
                     break;
                 }
 
+                // If they didnt give a valid subcommand, error
                 if (!validSubcommandNames.includes(input[1])) {
                     valid = false;
                     errorMessage = "You must include a valid subcommand.";
@@ -101,12 +101,15 @@ module.exports = {
                     break;
                 }
 
+                // Grab the subcommands data
                 let subcommandObject = argument.subcommands.filter(subcommand => subcommand.name === input[1])[0];
 
+                // Do this function but on the subcommand instead of the root command
                 return this.validateCommand(client, message, subcommandObject, true);
             }
 
             // If the argument is... an argument
+            // Add it to the list of arguments
             if (argument.required) {
                 validArgumentStrings.push(`<${argument.name}>`);
             }
@@ -118,7 +121,7 @@ module.exports = {
 
             // Validate the argument
             if (argument.required) {
-                if (index >= input.length) {
+                if (index >= (input.length - (subcommand ? 1 : 0))) {
                     valid = false;
                     errorMessage = `You must include the \`${argument.name}\` argument.`;
                     break;
@@ -126,9 +129,11 @@ module.exports = {
             }
 
             // Validate argument types
+            // If its a string, itll almost always just be fine
             if (argument.type === "string") {
                 continue;
             }
+            // If its an int, try to convert it - error if the conversion fails
             else if (argument.type === "int") {
                 if (Number(input[index + (subcommand ? 2 : 1)]) === NaN) {
                     valid = false;
@@ -136,6 +141,7 @@ module.exports = {
                     break;
                 }
             }
+            // If its a url, check for "http" at the beginning of the string - error if its not there
             else if (argument.type === "url") {
                 if (!input[index + (subcommand ? 2 : 1)].startsWith("http")) {
                     valid = false;
@@ -143,8 +149,11 @@ module.exports = {
                     break;
                 }
             }
+            // If its a hex
             else if (argument.type === "hex") {
                 let color;
+
+                // Check for a hashtag at the beginning of the string (remove it if it exists)
                 if (input[index + (subcommand ? 2 : 1)].startsWith("#")) {
                     color = input[index + (subcommand ? 2 : 1)].substring(1);
                 }
@@ -152,6 +161,7 @@ module.exports = {
                     color = input[index + (subcommand ? 2 : 1)];
                 }
 
+                // Check if its the correct length (6) and can be converted into a number via 0x000000 formatting - error if either is false
                 if (!(color.length === 6 && !isNaN(Number("0x" + color)))) {
                     valid = false;
                     errorMessage = `The \`${argument.name}\` argument must be a hex color code.`;
