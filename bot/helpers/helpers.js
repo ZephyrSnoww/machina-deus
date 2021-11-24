@@ -64,22 +64,22 @@ module.exports = {
                 // Iterate through all valid subcommands
                 argument.subcommands.forEach((subcommand) => {
                     // // Iterate through all of the subcommands arguments
-                    // subcommand.arguments.forEach((subcommandArgument) => {
-                    //     // Add the argument to the help array
-                    //     if (subcommandArgument.required) {
-                    //         validArgumentStrings.push(`<${subcommandArgument.name}>`);
-                    //     }
-                    //     else {
-                    //         validArgumentStrings.push(`[${subcommandArgument.name}]`);
-                    //     }
+                    subcommand.arguments.forEach((subcommandArgument) => {
+                        // Add the argument to the help array
+                        if (subcommandArgument.required) {
+                            validArgumentStrings.push(`<${subcommandArgument.name}>`);
+                        }
+                        else {
+                            validArgumentStrings.push(`[${subcommandArgument.name}]`);
+                        }
 
-                    //     // Add the argument to the name array
-                    //     validArgumentNames.push(subcommandArgument.name);
-                    //     validArgumentText.push(`${subcommandArgument.name} (${subcommandArgument.required ? "required" : "not required"})`);
-                    // });
+                        // Add the argument to the name array
+                        // validArgumentNames.push(subcommandArgument.name);
+                        // validArgumentText.push(`${subcommandArgument.name} (${subcommandArgument.required ? "required" : "not required"})`);
+                    });
                     
                     // Add the subcommand help string and name
-                    validSubcommandStrings.push(`**${client.config.prefix}${data.name} ${subcommand.name}**`);
+                    validSubcommandStrings.push(`**${client.config.prefix}${data.name} ${subcommand.name}** ${validArgumentStrings.join(" ")} - ${subcommand.description}`);
                     validSubcommandNames.push(subcommand.name);
                 });
 
