@@ -38,10 +38,6 @@ module.exports = {
                         else {
                             validArgumentStrings.push(`[${subcommandArgument.name}]`);
                         }
-
-                        // Add the argument to the name array
-                        // validArgumentNames.push(subcommandArgument.name);
-                        // validArgumentText.push(`${subcommandArgument.name} (${subcommandArgument.required ? "required" : "not required"})`);
                     });
                     
                     // Add the subcommand help string and name
@@ -53,7 +49,7 @@ module.exports = {
                 if (input.length === 1) {
                     valid = false;
                     errorMessage = "You must include a subcommand.";
-                    validOptionsType = "subcommand";
+                    validOptionsType = "Subcommands";
                     validOptions = validSubcommandStrings;
                     break;
                 }
@@ -62,7 +58,7 @@ module.exports = {
                 if (!validSubcommandNames.includes(input[1])) {
                     valid = false;
                     errorMessage = "You must include a valid subcommand.";
-                    validOptionsType = "subcommand";
+                    validOptionsType = "Subcommands";
                     validOptions = validSubcommandStrings;
                     break;
                 }
@@ -100,7 +96,7 @@ module.exports = {
                 continue;
             }
             // If its an int, try to convert it - error if the conversion fails
-            else if (argument.type === "int") {
+            else if (argument.type === "int" && input[i + (subcommand ? 2 : 1)]) {
                 if (Number(input[i + (subcommand ? 2 : 1)]) === NaN) {
                     valid = false;
                     errorMessage = `The \`${argument.name}\` argument must be an integer.`;
@@ -108,7 +104,7 @@ module.exports = {
                 }
             }
             // If its a url, check for "http" at the beginning of the string - error if its not there
-            else if (argument.type === "url") {
+            else if (argument.type === "url" && input[i + (subcommand ? 2 : 1)]) {
                 if (!input[i + (subcommand ? 2 : 1)].startsWith("http")) {
                     valid = false;
                     errorMessage = `The \`${argument.name}\` argument must be a URL.`;
@@ -116,7 +112,7 @@ module.exports = {
                 }
             }
             // If its a hex
-            else if (argument.type === "hex") {
+            else if (argument.type === "hex" && input[i + (subcommand ? 2 : 1)]) {
                 let color;
 
                 // Check for a hashtag at the beginning of the string (remove it if it exists)
@@ -135,46 +131,98 @@ module.exports = {
                 }
             }
             // If its an emoji
+            else if (argument.type === "emoji" && input[i + (subcommand ? 2 : 1)]) {
+                const unicodeEmojiMatch = /\p{Extended_Pictographic}/u;
+                const discordEmojiMatch = /<:(\S+):(\d+)>/;
+
+                if (!(unicodeEmojiMatch.test(input[i + (subcommand ? 2 : 1)]) || discordEmojiMatch.test(input[i + (subcommand ? 2 : 1)]))) {
+                    valid = false;
+                    errorMessage = `The \`${argument.name}\` argument must be an emoji.`;
+                    break;
+                }
+            }
             // If its a time
+            else if (argument.type === "time" && input[i + (subcommand ? 2 : 1)]) {
+                const validTimeOptions = [
+                    "1 (1 hour)",
+                    "12 (12 hours)",
+                    "00:12 (12 minutes)",
+                    "12:34 (12 hours, 34 minutes)",
+                    "12:34:56 (12 hours, 34 minutes, 56 seconds)",
+                    "00:00:12 (12 seconds)"
+                ];
+
+                const argumentInput =  input[i + (subcommand ? 2 : 1)];
+                const splitInput = argumentInput.split(":");
+
+                if (splitInput.length === 1) {
+                    if (isNaN(Number(splitInput[0]))) {
+                        valid = false;
+                        errorMessage = `The \`${argument.name}\` argument must be a valid time.`;
+                        validOptionsType = "Time Formats";
+                        validOptions = validTimeOptions;
+                        break;
+                    }
+                }
+
+                if (splitInput.length > 3) {
+                    valid = false;
+                    errorMessage = `The \`${argument.name}\` argument must be a valid time.`;
+                    validOptionsType = "Time Formats";
+                    validOptions = validTimeOptions;
+                    break;
+                }
+
+                for (let x = 0; x < splitInput.length; x++) {
+                    let number = splitInput[x];
+                    if (isNaN(Number(number))) {
+                        valid = false;
+                        errorMessage = `The \`${argument.name}\` argument must be a valid time.`;
+                        validOptionsType = "Time Formats";
+                        validOptions = validTimeOptions;
+                        break;
+                    }
+                }
+
+                if (!valid) {
+                    break;
+                }
+            }
             // If its a user
+            else if (argument.type === "user" && input[i + (subcommand ? 2 : 1)]) {
+                if (!/<@!(\d+)>/.test(input[i + (subcommand ? 2 : 1)])) {
+                    valid = false;
+                    errorMessage = `The \`${argument.name}\` argument must be a user, in the form of a mention.`;
+                    break;
+                }
+            }
             // If its a channel
+            else if (argument.type === "channel" && input[i + (subcommand ? 2 : 1)]) {
+                if (!/<#(\d+)>/.test(input[i + (subcommand ? 2 : 1)])) {
+                    valid = false;
+                    errorMessage = `The \`${argument.name}\` argument must be a channel, in the form of a mention.`;
+                    break;
+                }
+            }
             // If its a voice channel
+            else if (argument.type === "voice channel" && input[i + (subcommand ? 2 : 1)]) {
+                const voiceChannels = message.guild.channels.cache.filter(channel => channel.type === "GUILD_VOICE");
+                if (voiceChannels.filter(channel => channel.name.toLowerCase() === input[i + (subcommand ? 2 : 1)].replace("-", " ")).size === 0) {
+                    valid = false;
+                    errorMessage = `The \`${argument.name}\` argument must be a voice channel name, with "-" instead of spaces.`;
+                    break;
+                }
+            }
             // If its a role
+            else if (argument.type === "role" && input[i + (subcommand ? 2 : 1)]) {
+                if (!/<@&(\d+)>/.test(input[i + (subcommand ? 2 : 1)])) {
+                    valid = false;
+                    errorMessage = `The \`${argument.name}\` argument must be a role, in the form of a mention.`;
+                    break;
+                }
+            }
         };
 
-        // // --- Subcommand Validation --- //
-        // // If the command requires a subcommand and the user didnt give one
-        // if (input.length === 1 && subcommand) {
-        //     valid = false;
-        //     errorMessage = "You must include a subcommand.";
-        //     validOptionsType = "subcommand";
-        //     validOptions = validSubcommandStrings;
-        // }
-
-        // // If the user gave an invalid subcommand
-        // if ((!validSubcommandNames.includes(input[1])) && subcommand) {
-        //     valid = false;
-        //     errorMessage = "You must include a valid subcommand.";
-        //     validOptionsType = "subcommand";
-        //     validOptions = validSubcommandStrings;
-        // }
-
-        // // If the user gave a valid subcommand but no arguments
-        // if (input.length === 2 && subcommand) {
-        //     valid = false;
-        //     errorMessage = "You must include arguments for the subcommand.";
-        //     validOptions = "arguments";
-        //     validOptions = validArgumentText;
-        // }
-
-        // --- Argument Validation --- //
-        // If the command requires arguments but the user gave none
-
-        // If the user gave some required arguments, but not all
-
-        // If the user gave all required arguments, but incorrect types
-
-        
         // If the command is invalid, give an error and return false
         if (!valid) {
             const embed = defaults.createErrorEmbed("400", errorMessage, validOptionsType, validOptions);

@@ -21,16 +21,15 @@ module.exports = {
         return _embed;
     },
 
-    createErrorEmbed(error, description, optionType="subcommand", validOptions=null) {
+    createErrorEmbed(error, description, optionType="Subcommands", validOptions=null) {
         if (!(Object.keys(this.data.errorTypes).includes(error))) {
             throw Error("A valid error value must be given");
         }
 
         const _embed = this.createDefaultEmbed(this.data.errorTypes[error], description);
-        const optionName = (optionType === "subcommand") ? "Subcommands" : "Arguments";
 
         if (validOptions) {
-            _embed.addField(`Valid ${optionName}`, validOptions.join("\n"));
+            _embed.addField(`Valid ${optionType}`, validOptions.join("\n"));
         }
 
         return _embed;
