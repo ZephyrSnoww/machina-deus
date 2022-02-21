@@ -1,86 +1,80 @@
-const { Client, Intents, Collection } = require("discord.js");
+import { REST } from "@discordjs/rest";
+import { Routes } from "discord-api-types/v9"
+import { Client, Collection, Intents } from "discord.js";
+import fs from "fs";
 
-const fs = require("fs");
+import config from "../config.json";
 
-let config = require("../config.json");
-const defaults = require("./helpers/defaults");
-
-// ==================================================
+// ==================== Basic bot setup ====================
 // Create new discord client
-// ==================================================
 const client = new Client({ intents: Object.values(Intents.FLAGS) });
 
-// ==================================================
+// ========== Fetching commands ==========
 // Get all command files
-// Make a new commands collection
-// ==================================================
-let commandFiles = fs.readdirSync("./bot/commands").filter((file) => file.endsWith(".js"));
-client.commands = new Collection();
-client.config = config;
+let commandFiles = fs.readdirSync("./bot/commands")
+    .filter((file) => file.endsWith(".js"));
 
-// ==================================================
-// Iterate through command files
-// Add them to the commands collection
-// ==================================================
-for (const file of commandFiles) {
-    const command = require(`./commands/${file}`);
+// Put all commands into a collection
+client.commands = new Collection();
+let commandData = [];
+
+for (let file of commandFiles) {
+    import command from `./commands/${file}`;
     client.commands.set(command.data.name, command);
+    commandData.push(command.data.toJSON());
 }
 
-// ==================================================
-// Once the bot is logged into D*scord
-// ==================================================
+// ==================== Events ====================
+// ========== When ready ==========
 client.once("ready", () => {
-    console.info("Machina Deus online.");
+    console.info("Machina Deus online");
+
+    // Grab the client ID and make a new discord REST interface
+    const clientID = client.user.id;
+    const rest = new REST({ version: "9" }).setToken(config.token);
+
+    (async () => {
+        try {
+            // Give discord our command data to register commands
+            await rest.put(
+                Routes.applicationGuildCommands(clientID, config.guildID),
+                {
+                    body: commandData
+                }
+            );
+
+            // Log success
+            console.info("Successfully registered application commands");
+        } catch (error) {
+            // Log failure
+            if (error) { console.error(error); }
+        }
+    })();
 });
 
-// ==================================================
-// Handling commands
-// ==================================================
-client.on("messageCreate", async (message) => {
-    // If the message doesn't start with the bots prefix, do nothing
-    if (!message.content.startsWith(config.prefix)) { return; }
+// ========== Command interactions ==========
+client.on("interactionCreate", async (interaction) => {
+    if (!interaction.isCommand()) { return; }
 
-    const input = message.content.substring(config.prefix.length);
-    const commandString = input.split(" ")[0];
-    const command = client.commands.get(commandString);
+    // Get the commands data
+    let command = client.commands.get(interaction.commandName);
 
-    // If they're reloading the bot
-    if (commandString === "reload") {
-        // Reload config
-        config = require("../config.json");
-        client.config = config;
-
-        // Reload commands
-        commandFiles = fs.readdirSync("./bot/commands").filter((file) => file.endsWith(".js"));
-        client.commands = new Collection();
-
-        for (const file of commandFiles) {
-            delete require.cache[require.resolve(`./commands/${file}`)];
-            const command = require(`./commands/${file}`);
-            client.commands.set(command.data.name, command);
-        }
-
-        // Reply
-        console.info(`${message.author.username} reloaded Machina Deus.`);
-        return message.reply("Config and commands reloaded successfully.");
-    }
-
-    // If the command doesn't exist, do nothing
+    // Make sure the command exists
     if (!command) { return; }
 
+    // Try to execute the command
     try {
-        // Try to execute the command
-        await command.execute(client, message);
-    } catch (error) {
-        // Error if the command errors
-        console.error(error);
-        const embed = defaults.createErrorEmbed("500", "There was an error executing this command.");
-        return message.reply({ embeds: [embed] });
+        await command.execute(interaction);
+    }
+    // If we get an error
+    catch (error) {
+        // Log it and tell the user something happened
+        if (error) { console.error(error); }
+        await interaction.reply({
+            content: "Something broke when I tried to do that command."
+        });
     }
 });
 
-// ==================================================
-// Log into the bot
-// ==================================================
+// ==================== Log in ====================
 client.login(config.token);
