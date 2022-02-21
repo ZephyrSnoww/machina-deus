@@ -6,6 +6,9 @@
 
 ### Commands
 
+- [x] Ping
+- [ ] Basic vote
+
 - [ ] help
 - [x] ping
 - [ ] vote
